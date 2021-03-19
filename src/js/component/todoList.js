@@ -19,6 +19,10 @@ export function ToDoList() {
 		setList(updateList);
 	};
 
+	const deleteAll = () => {
+		setList([]);
+	};
+
 	return (
 		<div className="container pt-3">
 			<h1 className="text-center display-3">todos</h1>
@@ -46,9 +50,9 @@ export function ToDoList() {
 							);
 						})}
 					</ul>
-					<div className="card-footer bg-transparent">
-						<p className="card-text text-right">
-							<small className="text-muted">
+					<div className="card-footer bg-transparent d-flex justify-content-end pr-0">
+						<p className="card-text pr-4">
+							<small className="text-muted ">
 								{list.length === 0
 									? "(No pending tasks)"
 									: list.length === 1 // if else with ternary operator
@@ -56,6 +60,12 @@ export function ToDoList() {
 									: list.length + " tasks left"}
 							</small>
 						</p>
+						<button
+							type="button"
+							className="btn btn-outline-secondary btn-sm"
+							onClick={deleteAll}>
+							Delete All
+						</button>
 					</div>
 				</div>
 			</card>
