@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export function ToDoList() {
 	const [list, setList] = useState([]);
@@ -9,6 +9,18 @@ export function ToDoList() {
 			setList(list => [...list, inputValue]);
 			setInputValue("");
 		}
+		/*
+		fetch("https://assets.breatheco.de/apis/fake/todos/user/shmaither", {
+			method: "PUT", // or 'PUT'
+			body: JSON.stringify(list), // data can be `string` or {object}!
+			headers: {
+				"Content-Type": "application/json"
+			}
+		})
+			.then(res => res.json())
+			.then(response => console.log("Success:", JSON.stringify(response)))
+            .catch(error => console.error("Error:", error));
+        */
 	};
 
 	const deleteTask = listIndex => {
@@ -22,7 +34,26 @@ export function ToDoList() {
 	const deleteAll = () => {
 		setList([]);
 	};
+	/*
+	useEffect(() => {
+		sync();
+	}, []);
 
+	const sync = () => {
+		fetch("https://assets.breatheco.de/apis/fake/todos/user/shmaither", {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json"
+			}
+		})
+			.then(function(response) {
+				return response.json();
+			})
+			.then(function(myJson) {
+				setList(myJson);
+			});
+	};
+    */
 	return (
 		<div className="container pt-3">
 			<h1 className="text-center display-3">todos</h1>
@@ -62,9 +93,14 @@ export function ToDoList() {
 						</p>
 						<button
 							type="button"
-							className="btn btn-outline-secondary btn-sm"
+							className="btn btn-outline-secondary btn-sm mr-2"
 							onClick={deleteAll}>
 							Delete All
+						</button>
+						<button
+							type="button"
+							className="btn btn-outline-success btn-sm">
+							<i className="fas fa-redo"></i>
 						</button>
 					</div>
 				</div>
