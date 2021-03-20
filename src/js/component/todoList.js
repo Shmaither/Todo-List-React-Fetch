@@ -27,9 +27,7 @@ export function ToDoList() {
 						console.log("respuesta", resp);
 						return resp.json();
 					})
-					.then(data => {
-						setList(data);
-					})
+					.then(data => setList(data))
 
 					.catch(err => {
 						console.log("error", err);
@@ -43,7 +41,11 @@ export function ToDoList() {
 
 	const addTask = e => {
 		if (e.key === "Enter" && inputValue != "") {
-			setList(list => [...list, { label: inputValue, done: false }]);
+			setList(newTask => [
+				...newTask,
+				{ label: inputValue, done: false }
+			]);
+			setInputValue("");
 
 			fetch(
 				"https://assets.breatheco.de/apis/fake/todos/user/shmaither",
@@ -58,7 +60,7 @@ export function ToDoList() {
 				.then(res => res.json())
 				.then(response => {
 					console.log("Success:", JSON.stringify(response));
-					setInputValue("");
+					console.log(list);
 				})
 				.catch(error => console.error("Error:", error));
 		}
@@ -69,76 +71,68 @@ export function ToDoList() {
 			//underscore indicates the first parameter is not being used
 			(_task, taskIndex) => taskIndex != listIndex
 		);
-		setList(updateList);
-		/*            
+
 		const methods = ["PUT", "DELETE"];
 
-		if (tempList.length > 0) {
+		if (updateList.length > 0) {
 			fetch(
-				"https://assets.breatheco.de/apis/fake/todos/user/manulabarca",
+				"https://assets.breatheco.de/apis/fake/todos/user/shmaither",
 				{
 					method: methods[0],
 					headers: {
 						"Content-Type": "application/json"
 					},
-					body: JSON.stringify(tempList)
+					body: JSON.stringify(updateList)
 				}
 			)
 				.then(resp => {
 					console.log("Respuesta de borrado", resp);
-					setLista(tempList);
-					console.log(lista);
+					setList(updateList);
+					console.log(list);
 				})
 				.catch(error => {
 					console.log("Error delete", error);
 				});
 		} else {
 			fetch(
-				"https://assets.breatheco.de/apis/fake/todos/user/manulabarca",
+				"https://assets.breatheco.de/apis/fake/todos/user/shmaither",
 				{
 					method: methods[1],
 					headers: {
 						"Content-Type": "application/json"
 					},
-					body: JSON.stringify(tempList)
+					body: JSON.stringify(updateList)
 				}
 			)
 				.then(resp => {
 					console.log("Respuesta de borrado", resp);
-					setLista(tempList);
-					console.log(lista);
+					setList(updateList);
+					console.log(list);
 				})
 				.catch(error => {
 					console.log("Error delete", error);
 				});
-        }
-        */
+		}
 	};
 
 	const deleteAll = () => {
-		setList([]);
-	};
-
-	/*
-	useEffect(() => {
-		sync();
-	}, []);
-
-	const sync = () => {
+		let tempList = [];
 		fetch("https://assets.breatheco.de/apis/fake/todos/user/shmaither", {
-			method: "GET",
+			method: "DELETE",
 			headers: {
 				"Content-Type": "application/json"
-			}
+			},
+			body: JSON.stringify(tempList)
 		})
-			.then(function(response) {
-				return response.json();
+			.then(resp => {
+				console.log("Respuesta de borrado", resp);
+				setList(tempList);
+				console.log(list);
 			})
-			.then(function(myJson) {
-				setList(myJson);
+			.catch(error => {
+				console.log("Error delete", error);
 			});
 	};
-    */
 
 	return (
 		<div className="container pt-3">
