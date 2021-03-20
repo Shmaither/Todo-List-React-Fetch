@@ -4,23 +4,64 @@ export function ToDoList() {
 	const [list, setList] = useState([]);
 	const [inputValue, setInputValue] = useState("");
 
-	const addTask = e => {
-		if (e.key === "Enter" && inputValue != "") {
-			setList(list => [...list, inputValue]);
-			setInputValue("");
-		}
-		/*
+	useEffect(() => {
 		fetch("https://assets.breatheco.de/apis/fake/todos/user/shmaither", {
-			method: "PUT", // or 'PUT'
-			body: JSON.stringify(list), // data can be `string` or {object}!
+			method: "POST", // or 'PUT'
+			body: JSON.stringify([]), // data can be `string` or {object}!
 			headers: {
 				"Content-Type": "application/json"
 			}
 		})
-			.then(res => res.json())
-			.then(response => console.log("Success:", JSON.stringify(response)))
-            .catch(error => console.error("Error:", error));
-        */
+			.then(res => {
+				fetch(
+					"https://assets.breatheco.de/apis/fake/todos/user/shmaither",
+					{
+						method: "GET",
+
+						headers: {
+							"Content-Type": "application/json"
+						}
+					}
+				)
+					.then(resp => {
+						console.log("respuesta", resp);
+						return resp.json();
+					})
+					.then(data => {
+						setList(data);
+					})
+
+					.catch(err => {
+						console.log("error", err);
+					});
+			})
+
+			.catch(err => {
+				console.log("error", err);
+			});
+	}, []);
+
+	const addTask = e => {
+		if (e.key === "Enter" && inputValue != "") {
+			setList(list => [...list, { label: inputValue, done: false }]);
+
+			fetch(
+				"https://assets.breatheco.de/apis/fake/todos/user/shmaither",
+				{
+					method: "PUT", // or 'PUT'
+					body: JSON.stringify(list), // data can be `string` or {object}!
+					headers: {
+						"Content-Type": "application/json"
+					}
+				}
+			)
+				.then(res => res.json())
+				.then(response => {
+					console.log("Success:", JSON.stringify(response));
+					setInputValue("");
+				})
+				.catch(error => console.error("Error:", error));
+		}
 	};
 
 	const deleteTask = listIndex => {
@@ -29,11 +70,55 @@ export function ToDoList() {
 			(_task, taskIndex) => taskIndex != listIndex
 		);
 		setList(updateList);
+		/*            
+		const methods = ["PUT", "DELETE"];
+
+		if (tempList.length > 0) {
+			fetch(
+				"https://assets.breatheco.de/apis/fake/todos/user/manulabarca",
+				{
+					method: methods[0],
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify(tempList)
+				}
+			)
+				.then(resp => {
+					console.log("Respuesta de borrado", resp);
+					setLista(tempList);
+					console.log(lista);
+				})
+				.catch(error => {
+					console.log("Error delete", error);
+				});
+		} else {
+			fetch(
+				"https://assets.breatheco.de/apis/fake/todos/user/manulabarca",
+				{
+					method: methods[1],
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify(tempList)
+				}
+			)
+				.then(resp => {
+					console.log("Respuesta de borrado", resp);
+					setLista(tempList);
+					console.log(lista);
+				})
+				.catch(error => {
+					console.log("Error delete", error);
+				});
+        }
+        */
 	};
 
 	const deleteAll = () => {
 		setList([]);
 	};
+
 	/*
 	useEffect(() => {
 		sync();
@@ -54,6 +139,7 @@ export function ToDoList() {
 			});
 	};
     */
+
 	return (
 		<div className="container pt-3">
 			<h1 className="text-center display-3">todos</h1>
@@ -73,7 +159,7 @@ export function ToDoList() {
 								<li
 									className="list-group-item d-flex justify-content-between"
 									key={listIndex}>
-									{task}
+									{task.label}
 									<span onClick={() => deleteTask(listIndex)}>
 										<i className="fas fa-times"></i>
 									</span>
