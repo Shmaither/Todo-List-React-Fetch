@@ -39,31 +39,15 @@ export function ToDoList() {
 			});
 	}, []);
 
-	const addTask = e => {
-		if (e.key === "Enter" && inputValue != "") {
+	const addTask = () => {
+		if (inputValue != "") {
 			setList(newTask => [
 				...newTask,
 				{ label: inputValue, done: false }
 			]);
 			setInputValue("");
-
-			fetch(
-				"https://assets.breatheco.de/apis/fake/todos/user/shmaither",
-				{
-					method: "PUT", // or 'PUT'
-					body: JSON.stringify(list), // data can be `string` or {object}!
-					headers: {
-						"Content-Type": "application/json"
-					}
-				}
-			)
-				.then(res => res.json())
-				.then(response => {
-					console.log("Success:", JSON.stringify(response));
-					console.log(list);
-				})
-				.catch(error => console.error("Error:", error));
 		}
+		updateAPI();
 	};
 
 	const deleteTask = listIndex => {
@@ -71,10 +55,20 @@ export function ToDoList() {
 			//underscore indicates the first parameter is not being used
 			(_task, taskIndex) => taskIndex != listIndex
 		);
+		setList(updateList);
+		updateAPI();
+	};
 
+	const deleteAll = () => {
+		let emptyList = [];
+		setList(emptyList);
+		updateAPI();
+	};
+
+	const updateAPI = () => {
 		const methods = ["PUT", "DELETE"];
 
-		if (updateList.length > 0) {
+		if (list.length > 0) {
 			fetch(
 				"https://assets.breatheco.de/apis/fake/todos/user/shmaither",
 				{
@@ -82,12 +76,11 @@ export function ToDoList() {
 					headers: {
 						"Content-Type": "application/json"
 					},
-					body: JSON.stringify(updateList)
+					body: JSON.stringify(list)
 				}
 			)
 				.then(resp => {
 					console.log("Respuesta de borrado", resp);
-					setList(updateList);
 					console.log(list);
 				})
 				.catch(error => {
@@ -101,37 +94,17 @@ export function ToDoList() {
 					headers: {
 						"Content-Type": "application/json"
 					},
-					body: JSON.stringify(updateList)
+					body: JSON.stringify(list)
 				}
 			)
 				.then(resp => {
 					console.log("Respuesta de borrado", resp);
-					setList(updateList);
 					console.log(list);
 				})
 				.catch(error => {
 					console.log("Error delete", error);
 				});
 		}
-	};
-
-	const deleteAll = () => {
-		let tempList = [];
-		fetch("https://assets.breatheco.de/apis/fake/todos/user/shmaither", {
-			method: "DELETE",
-			headers: {
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify(tempList)
-		})
-			.then(resp => {
-				console.log("Respuesta de borrado", resp);
-				setList(tempList);
-				console.log(list);
-			})
-			.catch(error => {
-				console.log("Error delete", error);
-			});
 	};
 
 	return (
@@ -142,8 +115,8 @@ export function ToDoList() {
 					type="text"
 					className="form-control"
 					onChange={e => setInputValue(e.target.value)}
+					onKeyUp={e => (e.key === "Enter" ? addTask() : "")}
 					value={inputValue}
-					onKeyUp={addTask}
 					placeholder="Add a task here . . ."
 				/>
 				<div>
@@ -174,13 +147,8 @@ export function ToDoList() {
 						<button
 							type="button"
 							className="btn btn-outline-secondary btn-sm mr-2"
-							onClick={deleteAll}>
+							onClick={() => deleteAll()}>
 							Delete All
-						</button>
-						<button
-							type="button"
-							className="btn btn-outline-success btn-sm">
-							<i className="fas fa-redo"></i>
 						</button>
 					</div>
 				</div>
