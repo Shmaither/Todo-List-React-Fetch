@@ -69,25 +69,18 @@ export function ToDoList() {
 	};
 
 	const deleteTask = listIndex => {
-		let updateList = list.filter(
+		let tempList = [...list];
+		console.log("tempList inside deleteTask: ", tempList);
+		let updateList = tempList.filter(
 			//underscore indicates the first parameter is not being used
 			(_task, taskIndex) => taskIndex != listIndex
 		);
-		setList(updateList);
-		updateAPI();
-	};
+		console.log("upadateList inside deleteTask: ", updateList);
 
-	const deleteAll = () => {
-		let emptyList = [];
-		setList(emptyList);
-		updateAPI();
-	};
-
-	const updateAPI = () => {
 		const methods = ["PUT", "DELETE"];
 
-		if (list.length > 0) {
-			console.log("List extension: ", list.length);
+		if (updateList.length > 0) {
+			console.log("List extension: ", updateList.length);
 			fetch(
 				"https://assets.breatheco.de/apis/fake/todos/user/shmaither",
 				{
@@ -95,12 +88,13 @@ export function ToDoList() {
 					headers: {
 						"Content-Type": "application/json"
 					},
-					body: JSON.stringify(list)
+					body: JSON.stringify(updateList)
 				}
 			)
 				.then(resp => {
 					console.log("Respuesta de PUT", resp);
-					console.log(list);
+					setList(updateList);
+					console.log("List from useState inside deleteTask: ", list);
 				})
 				.catch(error => {
 					console.log("Error PUT", error);
@@ -113,17 +107,37 @@ export function ToDoList() {
 					headers: {
 						"Content-Type": "application/json"
 					},
-					body: JSON.stringify(list)
+					body: JSON.stringify(updateList)
 				}
 			)
 				.then(resp => {
 					console.log("Respuesta de DELETE", resp);
+					setList(updateList);
 					console.log(list);
 				})
 				.catch(error => {
 					console.log("Error delete", error);
 				});
 		}
+	};
+
+	const deleteAll = () => {
+		let emptyList = [];
+
+		fetch("https://assets.breatheco.de/apis/fake/todos/user/shmaither", {
+			method: "DELETE",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(emptyList)
+		})
+			.then(resp => {
+				console.log("Respuesta de DELETE inside deleteAll", resp);
+				setList(emptyList);
+			})
+			.catch(error => {
+				console.log("Error delete", error);
+			});
 	};
 
 	return (
