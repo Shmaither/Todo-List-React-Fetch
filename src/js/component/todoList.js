@@ -39,15 +39,33 @@ export function ToDoList() {
 			});
 	}, []);
 
-	const addTask = () => {
-		if (inputValue != "") {
-			setList(newTask => [
-				...newTask,
-				{ label: inputValue, done: false }
-			]);
+	const addTask = e => {
+		if (e.key === "Enter" && inputValue !== "") {
+			let newObject = { label: inputValue, done: false };
+			let newList = list.concat(newObject);
+			//setList([...list, newObject]);
 			setInputValue("");
+			console.log("Objects in list, when addTask: ", newList);
+
+			console.log("List extension: ", newList.length);
+			fetch(
+				"https://assets.breatheco.de/apis/fake/todos/user/shmaither",
+				{
+					method: "PUT",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify(newList)
+				}
+			)
+				.then(resp => {
+					console.log("Respuesta de PUT from addTask", resp);
+					setList(newList);
+				})
+				.catch(error => {
+					console.log("Error PUT", error);
+				});
 		}
-		updateAPI();
 	};
 
 	const deleteTask = listIndex => {
@@ -69,6 +87,7 @@ export function ToDoList() {
 		const methods = ["PUT", "DELETE"];
 
 		if (list.length > 0) {
+			console.log("List extension: ", list.length);
 			fetch(
 				"https://assets.breatheco.de/apis/fake/todos/user/shmaither",
 				{
@@ -80,11 +99,11 @@ export function ToDoList() {
 				}
 			)
 				.then(resp => {
-					console.log("Respuesta de borrado", resp);
+					console.log("Respuesta de PUT", resp);
 					console.log(list);
 				})
 				.catch(error => {
-					console.log("Error delete", error);
+					console.log("Error PUT", error);
 				});
 		} else {
 			fetch(
@@ -98,7 +117,7 @@ export function ToDoList() {
 				}
 			)
 				.then(resp => {
-					console.log("Respuesta de borrado", resp);
+					console.log("Respuesta de DELETE", resp);
 					console.log(list);
 				})
 				.catch(error => {
@@ -115,7 +134,7 @@ export function ToDoList() {
 					type="text"
 					className="form-control"
 					onChange={e => setInputValue(e.target.value)}
-					onKeyUp={e => (e.key === "Enter" ? addTask() : "")}
+					onKeyUp={addTask}
 					value={inputValue}
 					placeholder="Add a task here . . ."
 				/>
